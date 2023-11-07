@@ -1,0 +1,3 @@
+newTemperature/newTemperatureFvPatchScalarField.C
+
+LIB = $(FOAM_USER_LIBBIN)/libMyBoundaryConditions
