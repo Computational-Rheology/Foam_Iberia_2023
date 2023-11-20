@@ -1,0 +1,161 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2306                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     simpleFoam;
+
+startFrom       startTime;
+
+startTime       0;
+
+stopAt          endTime;
+
+endTime         500;
+
+deltaT          1;
+
+writeControl    timeStep;
+
+writeInterval   50;
+
+purgeWrite      0;
+
+writeFormat     ascii;
+
+writePrecision  6;
+
+writeCompression off;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable true;
+
+functions
+{
+    momErr
+    {
+        type            momentumError;
+        libs            (fieldFunctionObjects);
+        executeControl  writeTime;
+        writeControl    writeTime;
+    }
+
+    contErr
+    {
+        type            div;
+        libs            (fieldFunctionObjects);
+        field           phi;
+        executeControl  writeTime;
+        writeControl    writeTime;
+    }
+
+
+    turbulenceFields1
+    {
+        type            turbulenceFields;
+        libs            (fieldFunctionObjects);
+        fields
+        (
+            k
+            epsilon
+            nut
+            nuEff
+            R
+            devReff
+            L
+            I
+        );
+
+        executeControl  writeTime;
+        writeControl    writeTime;
+    }
+
+    mag1
+    {
+        type            mag;
+        libs            (fieldFunctionObjects);
+        field           turbulenceProperties:R;
+
+        result          magR;
+        executeControl  writeTime;
+        writeControl    writeTime;
+    }
+
+    Ustar
+    {
+        name    Ustar;
+        type    coded;
+        libs    (utilityFunctionObjects);
+
+        executeControl  timeStep;
+        writeControl    timeStep;
+	executeInterval 100;
+	writeInterval   100;
+
+        codeWrite
+        #{
+            // Name of the patch with inlet velocity
+            word inletPatch = "inlet";
+            // Lookup U
+            Info<< "\n\tLooking up field U" << endl;
+            const auto& U = mesh().lookupObject<volVectorField>("U");
+
+            Info<< "\tReading inlet velocity uInlet" << endl;
+
+            // Get the label of the patch within inlet velocity
+            label inletI = mesh().boundaryMesh().findPatchID(inletPatch);
+            // Get velocity in patch inletI (just in the processor)
+            const auto& UInlet = U.boundaryField()[inletI];
+            // Get the magnitude of inlet velocity as it is uniform
+            scalar magUInlet = 0.0;
+            if (UInlet.size())
+            {
+                magUInlet = mag(UInlet[0]);
+            }
+            // Get the maximum value through the processors
+            // OBS: this operation is extremely importante because in some cases 
+            // we don't have cells for inlet patch at processor 0
+            reduce(magUInlet, maxOp<scalar>());
+
+            // Creates a dimensional scalar to make possible the operation with U
+            dimensionedScalar uIn("uIn", dimVelocity, magUInlet);
+
+            Info<< "\tMagnitude of U at inlet = " << uIn.value() << " m/s" << endl;
+
+            // Create a volScalar field for the non-dimensional velocity
+            // U* = mag(U)/mag(Uin)
+            volScalarField UStar
+            (
+                IOobject
+                (
+                    "UStar",
+                    mesh().time().timeName(),
+                    mesh(),
+                    IOobject::NO_READ
+                ),
+                mag(U)/uIn
+            );
+
+            // Writing of UStar
+            Info<< "\n\tfunctionObjects::coded UStar writing field: UStar\n" << endl;
+            UStar.write();
+        #};
+    }
+}
+
+
+// ************************************************************************* //
