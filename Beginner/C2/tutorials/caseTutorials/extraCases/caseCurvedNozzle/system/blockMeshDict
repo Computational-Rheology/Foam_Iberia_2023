@@ -1,0 +1,179 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2306                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Geometry Parametrization
+
+  /*-----------------------------------------------------------------------*/
+  /*User input Section ----------------------------------------------------*/
+
+    //Radius
+        // R0 are the radius @ inlet
+        //Outside Circle radius
+        R0out    30.0;
+        //Inside Circle radius 
+        R0in     15.0;
+ 
+        // R1 are the radius @ outlet
+        //Outside Circle radius
+        R1out    12.5;
+        //Inside Circle radius 
+        R1in     10.0;
+
+    //Angles
+        // Angle of Inlet plane (Where the Circle sector starts)
+        AlphaStartDeg    030.000000;
+        // Angle of Inlet plane (Where the Circle sector starts)
+        AlphaEndDeg      180.000000;
+    
+    //depth for the tube
+        z0 -2.5; // back plane
+        z1  2.5; // front plane
+
+  /*-----------------------------------------------------------------------*/
+  /*- END UI SECTION ------------------------------------------------------*/
+
+
+  /*-----------------------------------------------------------------------*/
+  /*Mathematical Operations------------------------------------------------*/
+
+  //Convesions to get each corresponding rectangular coordinates
+    //Degrees to Radians 
+        AlphaStart  #calc "degToRad($AlphaStartDeg)";
+        AlphaEnd    #calc "degToRad($AlphaEndDeg)";
+    
+    //Start of circular sector
+        XRinAlphaS  #calc "$R0in*cos($AlphaStart)";
+        YRinAlphaS  #calc "$R0in*sin($AlphaStart)";
+
+        XRoutAlphaS #calc "$R0out*cos($AlphaStart)";
+        YRoutAlphaS #calc "$R0out*sin($AlphaStart)";
+
+    //End of circular sector
+        XRinAlphaE  #calc "$R1in*cos($AlphaEnd)";
+        YRinAlphaE  #calc "$R1in*sin($AlphaEnd)";
+
+        XRoutAlphaE #calc "$R1out*cos($AlphaEnd)";
+        YRoutAlphaE #calc "$R1out*sin($AlphaEnd)";
+
+  /*-----------------------------------------------------------------------*/
+  /*- END Mth.O. SECTION --------------------------------------------------*/
+
+//BlockMesh file standard input: 
+
+convertToMeters 0.01;
+
+vertices
+(
+    //First Plane
+    ( $XRinAlphaS   $YRinAlphaS  $z0 )   //0
+    ( $XRoutAlphaS  $YRoutAlphaS $z0 )   //1
+    ( $XRoutAlphaE  $YRoutAlphaE $z0 )   //2
+    ( $XRinAlphaE   $YRinAlphaE  $z0 )   //3
+    //First Plane
+    ( $XRinAlphaS   $YRinAlphaS  $z1 )   //4
+    ( $XRoutAlphaS  $YRoutAlphaS $z1 )   //5
+    ( $XRoutAlphaE  $YRoutAlphaE $z1 )   //6
+    ( $XRinAlphaE   $YRinAlphaE  $z1 )   //7
+
+);
+
+
+// U.I. Mesh refinement controls
+    
+    NR      15;  // Number of cells through the radial direction
+    NAlpha  180; // Number of cell in the Alpha angle direction
+    Nz      15;  // Z direction Channel depth  
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) ($NR $NAlpha $Nz) simpleGrading (1 1 1)
+);
+
+// Arc Parametrization
+    
+    //Intermediate radius approximation:
+    RAvgout     #calc   "($R0out+$R1out)*0.5";
+    RAvgin      #calc   "($R0in+$R1in)*0.5";
+
+    //Intermediate alpha angle:
+    AlphaAVGDeg #calc   "($AlphaStartDeg+$AlphaEndDeg)*0.5";
+    AlphaAVG    #calc   "degToRad($AlphaAVGDeg)";
+
+
+    //Convesions to get arcs corresponding rectangular coordinates
+    XArcOut     #calc   "$RAvgout*cos($AlphaAVG)";
+    YArcOut     #calc   "$RAvgout*sin($AlphaAVG)";
+
+    XArcIn      #calc   "$RAvgin*cos($AlphaAVG)";
+    YArcIn      #calc   "$RAvgin*sin($AlphaAVG)";
+
+edges
+(
+    arc  1  2  ( $XArcOut   $YArcOut    $z0 ) //Arc outside
+    arc  5  6  ( $XArcOut   $YArcOut    $z1 )
+                                       
+    arc  0  3  ( $XArcIn    $YArcIn     $z0 ) //Arc midline
+    arc  4  7  ( $XArcIn    $YArcIn     $z1 )
+    
+);
+
+boundary
+(
+    inlet
+    {
+        type patch;
+        faces
+        (
+            ( 0 1 5 4 )
+        );
+    }
+    outlet
+    {
+        type patch;
+        faces
+        (
+            ( 2 3 7 6 )
+        );
+    }
+    walls
+    {
+        type wall;
+        faces
+        (
+            //Bottom
+            ( 0 4 7 3 )
+            //Top
+            ( 1 2 6 5 )
+        );
+    }
+    frontAndBack
+    {
+        type wall;
+        faces
+        (
+            //front
+            ( 4 5 6 7 )
+            //Back
+            ( 2 1 0 3 )
+        );
+    }
+);
+
+mergePatchPairs
+(
+);
+
+// ************************************************************************* //

@@ -1,0 +1,328 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2306                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+scale 1; // convertToMeters 1;
+
+// The mesh parametrization is before the "blocks" section:
+// Geometry Parametrization
+
+    /*-----------------------------------------------------------------------*/
+    /*User input Section ----------------------------------------------------*/
+
+        // Lenghts:
+            L_in        1.00;
+            L_out       1.00;
+            L_Reservoir 4.50;
+
+        // Heigths:
+            H_ReservTop   1.00;
+            H_ReservMid   0.25;
+            H_ReservLow   0.50;
+
+            h_deepth      1.25;
+
+        // Depths:
+            z0  0.00; // floor plane
+            z1  0.25; // Middle plane
+            z2  0.50; // Upper plane
+
+    /*-----------------------------------------------------------------------*/
+    /*- END UI SECTION ------------------------------------------------------*/
+
+    /*-----------------------------------------------------------------------*/
+    /*Mathematical Operations------------------------------------------------*/
+
+        // Global Coordinate Positions Calculations
+
+        // YMid #calc "0.5*$H_ReservMid";
+        YMid    #eval "0.5*$H_ReservMid";
+        YLowNeg #eval "(-1*$H_ReservLow)+(-$YMid)";
+        YTopPos #eval "($H_ReservTop)+($YMid)";
+
+        X_InChn  #eval "-1*$L_in";
+        X_Reserv #eval "$L_Reservoir";
+        X_OutChn #eval "$X_Reserv + $L_out";
+
+    /*-----------------------------------------------------------------------*/
+    /*- END Mth.O. SECTION --------------------------------------------------*/
+
+//BlockMesh file standard input entries:
+
+vertices
+(
+    // z at z0:
+
+        // Reservoir Mid    0.0 
+        (     0.0     -$YMid    $z0 )   // id:  0
+        (  $X_Reserv  -$YMid    $z0 )   // id:  1
+        (  $X_Reserv   $YMid    $z0 )   // id:  2
+        (     0.0      $YMid    $z0 )   // id:  3
+
+        // Reservoir Low
+        (     0.0     $YLowNeg  $z0 )   // id:  4
+        (  $X_Reserv  $YLowNeg  $z0 )   // id:  5
+
+        // Reservoir Top
+        (  $X_Reserv  $YTopPos  $z0 )   // id:  6
+        (     0.0     $YTopPos  $z0 )   // id:  7
+
+        // inlet
+        (   $X_InChn   -$YMid   $z0 )   // id:  8
+        (   $X_InChn    $YMid   $z0 )   // id:  9
+
+        // outlet
+        (  $X_OutChn   -$YMid   $z0 )   // id:  10
+        (  $X_OutChn    $YMid   $z0 )   // id:  11
+
+    // z at z1:
+
+        // Reservoir Mid
+        (     0.0     -$YMid    $z1 )   // id:  12
+        (  $X_Reserv  -$YMid    $z1 )   // id:  13
+        (  $X_Reserv   $YMid    $z1 )   // id:  14
+        (     0.0      $YMid    $z1 )   // id:  15
+
+        // Reservoir Low
+        (     0.0     $YLowNeg  $z1 )   // id:  16
+        (  $X_Reserv  $YLowNeg  $z1 )   // id:  17
+
+        // Reservoir Top
+        (  $X_Reserv  $YTopPos  $z1 )   // id:  18
+        (     0.0     $YTopPos  $z1 )   // id:  19
+
+        // inlet
+        (   $X_InChn   -$YMid   $z1 )   // id:  20
+        (   $X_InChn    $YMid   $z1 )   // id:  21
+
+        // outlet
+        (  $X_OutChn   -$YMid   $z1 )   // id:  22
+        (  $X_OutChn    $YMid   $z1 )   // id:  23
+
+
+    // z at z2:
+
+        // Reservoir Mid
+        (     0.0     -$YMid   $z2 )   // id:  24
+        (  $X_Reserv  -$YMid   $z2 )   // id:  25
+        (  $X_Reserv   $YMid   $z2 )   // id:  26
+        (     0.0      $YMid   $z2 )   // id:  27
+
+        // Reservoir Low
+        (     0.0     $YLowNeg  $z2 )   // id:  28
+        (  $X_Reserv  $YLowNeg  $z2 )   // id:  29
+
+        // Reservoir Top
+        (  $X_Reserv  $YTopPos  $z2 )   // id:  30
+        (     0.0     $YTopPos  $z2 )   // id:  31
+
+        // inlet
+        (   $X_InChn   -$YMid   $z2 )   // id:  32
+        (   $X_InChn    $YMid   $z2 )   // id:  33
+
+        // outlet
+        (  $X_OutChn   -$YMid   $z2 )   // id:  34
+        (  $X_OutChn    $YMid   $z2 )   // id:  35
+);
+
+// Mesh refinement parametrization controls
+
+    /*-----------------------------------------------------------------------*/
+    /*User input Section ----------------------------------------------------*/
+
+        NXI  25; // Number of cell in the x direction of the inlet Channel
+        NXR 125; // Number of cell in the x direction of the Reservoir Section
+        NXO  25; // Number of cell in the x direction of the outlet Channel
+
+        NYL  20; // Number of cell in the y direction of the Lower Reservoir
+        NYM   9; // Number of cell in the y direction of the Middle Reservoir
+        NYT  30; // Number of cell in the y direction of the Top Reservoir
+
+        Nz   10; // Z direction Channel depth
+
+    /*-----------------------------------------------------------------------*/
+    /*- END UI SECTION ------------------------------------------------------*/
+
+blocks
+(
+    // Reservoir Mid
+    hex (  0  1  2  3 12 13 14 15 ) ($NXR $NYM $Nz) simpleGrading (1 1 1) // block id: 0
+    hex ( 12 13 14 15 24 25 26 27 ) ($NXR $NYM $Nz) simpleGrading (1 1 1) // block id: 1
+    // Reservoir Low
+    hex (  4  5  1  0 16 17 13 12 ) ($NXR $NYL $Nz) simpleGrading (1 1 1) // block id: 2
+    hex ( 16 17 13 12 28 29 25 24 ) ($NXR $NYL $Nz) simpleGrading (1 1 1) // block id: 3
+    // Reservoir Top
+    hex (  3  2  6  7 15 14 18 19 ) ($NXR $NYT $Nz) simpleGrading (1 1 1) // block id: 4
+    hex ( 15 14 18 19 27 26 30 31 ) ($NXR $NYT $Nz) simpleGrading (1 1 1) // block id: 5
+    
+    // inlet channel
+    hex (  8  0  3  9 20 12 15 21 ) ($NXI $NYM $Nz) simpleGrading (1 1 1) // block id: 6
+    hex ( 20 12 15 21 32 24 27 33 ) ($NXI $NYM $Nz) simpleGrading (1 1 1) // block id: 7
+    // outlet channel
+    hex (  1 10 11  2 13 22 23 14 ) ($NXO $NYM $Nz) simpleGrading (1 1 1) // block id: 8
+    hex ( 13 22 23 14 25 34 35 26 ) ($NXO $NYM $Nz) simpleGrading (1 1 1) // block id: 9
+);
+
+//Arc Parametrization:
+
+    /*-----------------------------------------------------------------------*/
+    /*Mathematical Operations------------------------------------------------*/
+
+        // Curved Surface for block atReservoir Low
+        
+            cXV1    #eval   "$L_Reservoir*0.5";
+            cYV1    #eval   "(-1)*($YMid+$h_deepth)";
+
+        
+        // // Curved Surface for block atReservoir Mid
+
+        //     // Common surface between Low and Mid blocks
+        //     cXV2    #eval   "$cXV1";
+        //     cYV2    #eval   "(($cYV1 + $H_ReservLow) + (-$YMid ))*1 / 2";
+
+        //     // Common surface between Mid and Top blocks
+        //     cXV3    #eval   "$cXV1";
+        //     cYV3    #eval   "(($cYV2 + $H_ReservMid) + ( $YMid ))*3 / 5";
+
+    /*-----------------------------------------------------------------------*/
+    /*- END Mth.O. SECTION --------------------------------------------------*/
+
+edges
+(
+    // Reservoir Low
+    arc  4  5 ($cXV1 $cYV1 $z0)
+    arc 16 17 ($cXV1 $cYV1 $z1)
+    arc 28 29 ($cXV1 $cYV1 $z2)
+
+    // Reservoir Mid
+
+        // Low|Mid blocks face
+        arc  0  1 ($cXV2 $cYV2 $z0)
+        arc 12 13 ($cXV2 $cYV2 $z1)
+        arc 24 25 ($cXV2 $cYV2 $z2)
+    
+        // Top|Mid blocks face
+        arc  3  2 ($cXV3 $cYV3 $z0)
+        arc 15 14 ($cXV3 $cYV3 $z1)
+        arc 27 26 ($cXV3 $cYV3 $z2)
+
+);
+
+
+boundary
+(
+    inlet
+    {
+        type patch;
+        faces
+        (
+            // Z Down Just
+            ( 9  8 20 21)
+        );
+    }
+    outlet
+    {
+        type patch;
+        faces
+        (
+            // Z Down
+            (10 11 23 22)
+            // Z Up
+            (22 23 35 34)
+        );
+    }
+    atmosphere
+    {
+        type patch;
+        faces
+        (
+            // Z up near inlet
+            (21 20 32 33)
+
+            // Front
+                // Reservoir Mid
+                (24 25 26 27)
+                // Reservoir Low
+                (28 29 25 24)
+                // Reservoir Top
+                (27 26 30 31)
+                // Inlet Channel
+                (32 24 27 33)
+                // Outlet Channel
+                (25 34 35 26)
+        );
+    }
+    walls
+    {
+        type wall;
+        faces
+        (
+            // Back
+                // Reservoir Mid
+                ( 0  1  2  3)
+                // Reservoir Low
+                ( 4  5  1  0)
+                // Reservoir Top
+                ( 3  2  6  7)
+                // Inlet Channel
+                ( 8  0  3  9)
+                // Outlet Channel
+                ( 1 10 11  2)
+
+            // Reservoir Mid
+                // Near inlet Channel
+                ( 0  4 16 12)
+                (12 16 28 24)
+                // Curved wall surfaces
+                ( 4  5 17 16)
+                (16 17 29 28)
+                //  Near outlet Channel
+                ( 5  1 13 17)
+                (17 13 25 29)
+        
+            // Reservoir Top
+                // Near inlet Channel
+                ( 7  3 15 19)
+                (19 15 27 31)
+                // Opposite to Curved wall surfaces
+                ( 6  7 19 18)
+                (18 19 31 30)
+                // Near outlet Channel
+                ( 2  6 18 14)
+                (14 18 30 26)
+        
+            // inlet channel
+                // Down
+                ( 8  0 12 20)
+                (20 12 24 32)
+                // Up
+                ( 3  9 21 15)
+                (15 21 33 27)
+            // outlet channel
+                // Down
+                ( 1 10 22 13)
+                (13 22 34 25)
+                // Up
+                (11  2 14 23)
+                (23 14 26 35)
+        );
+    }
+);
+
+mergePatchPairs
+(
+);
+
+// ************************************************************************* //

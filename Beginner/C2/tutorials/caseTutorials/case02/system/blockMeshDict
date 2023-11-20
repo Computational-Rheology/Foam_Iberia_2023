@@ -1,0 +1,95 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2306                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+scale 1.0; // convertToMeters 0.1;
+
+vertices
+(
+    (0 0 0)     // id: 0
+    (1 0 0)     // id: 1
+    (1 1 0)     // id: 2
+    (0 1 0)     // id: 3
+    (0 0 0.1)   // id: 4
+    (1 0 0.1)   // id: 5
+    (1 1 0.1)   // id: 6
+    (0 1 0.1)   // id: 7
+);
+
+blocks
+(
+  // Note:
+  //|   In order to check out how it works just uncomment a line, run  
+  //| blockMesh and check the results in paraview.
+  //|
+  //|   simpleGrading ( f_d0 f_d1 f_d2 ) - in the local block directions
+  //|
+  //|   It means that the last cell length in the di direction for the 
+  //| corresponding block divided by the first cell length is equal to 
+  //| the user input value in each f_di direction.
+  // 
+    
+    // hex (0 1 2 3 4 5 6 7) (20 20 1) simpleGrading ( 1.0  1.0  1.0 ) // original
+    hex (0 1 2 3 4 5 6 7) (20 20 1) simpleGrading (10.0  1.0  1.0 ) // Fig. A
+    hex (0 1 2 3 4 5 6 7) (20 20 1) simpleGrading ( 0.1  1.0  1.0 ) // Fig. B
+    hex (0 1 2 3 4 5 6 7) (20 20 1) simpleGrading ( 0.1  0.1  1.0 ) // Fig. C
+    hex (0 1 2 3 4 5 6 7) (20 20 1) simpleGrading ( 0.1 10.0  1.0 ) // Fig. D
+    
+  // Compare the setup of the following block with Fig. A
+  
+    hex (1 2 3 0 5 6 7 4) (20 20 1) simpleGrading ( 1.0  10.0  1.0 ) // Fig. E
+    
+);
+
+edges
+(
+);
+
+boundary
+(
+    movingWall
+    {
+        type wall;
+        faces
+        (
+            (3 7 6 2)
+        );
+    }
+    fixedWalls
+    {
+        type wall;
+        faces
+        (
+            (0 4 7 3)
+            (2 6 5 1)
+            (1 5 4 0)
+        );
+    }
+    frontAndBack
+    {
+        type empty;
+        faces
+        (
+            (0 3 2 1)
+            (4 5 6 7)
+        );
+    }
+);
+
+mergePatchPairs
+(
+);
+
+// ************************************************************************* //

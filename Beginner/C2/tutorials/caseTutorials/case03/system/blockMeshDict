@@ -1,0 +1,222 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2306                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+scale 1.0; 
+    
+vertices
+(
+    // z at 0:
+        // Reservoir Mid
+        (     X       Y      0.00 )   // id:  0
+        (     X       Y      0.00 )   // id:  1
+        (     X       Y      0.00 )   // id:  2
+        (     X       Y      0.00 )   // id:  3
+        // Reservoir Low
+        (     X       Y      0.00 )   // id:  4
+        (     X       Y      0.00 )   // id:  5
+        // Reservoir Top
+        (     X       Y      0.00 )   // id:  6
+        (     X       Y      0.00 )   // id:  7
+
+        // inlet
+        (     X       Y      0.00 )   // id:  8
+        (     X       Y      0.00 )   // id:  9
+        // outlet
+        (     X       Y      0.00 )   // id:  10
+        (     X       Y      0.00 )   // id:  11
+
+    // z at 0.5:
+        // Reservoir Mid
+        (     X       Y      0.50 )   // id:  12
+        (     X       Y      0.50 )   // id:  13
+        (     X       Y      0.50 )   // id:  14
+        (     X       Y      0.50 )   // id:  15
+        // Reservoir Low     
+        (     X       Y      0.50 )   // id:  16
+        (     X       Y      0.50 )   // id:  17
+        // Reservoir Top     
+        (     X       Y      0.50 )   // id:  18
+        (     X       Y      0.50 )   // id:  19
+     
+        // inlet     
+        (     X       Y      0.50 )   // id:  20
+        (     X       Y      0.50 )   // id:  21
+        // outlet    
+        (     X       Y      0.50 )   // id:  22
+        (     X       Y      0.50 )   // id:  23
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+);
+
+// // Mesh Refinements User Input Controls
+
+//     // X - Direction slicings
+//     NXI  25; // Number of cell in the x direction of the inflow Channel
+//     NXR 125; // Number of cell in the x direction of the Reservoir Section
+//     NXO  25; // Number of cell in the x direction of the outflow Channel
+//     // Y - Direction slicings
+//     NYT  30; // Number of cell in the y direction of the Top Reservoir
+//     NYM   9; // Number of cell in the y direction of the Middle Reservoir
+//     NYL  20; // Number of cell in the y direction of the Lower Reservoir
+//     // Z - Direction slicings
+//     Nz   10; // Z direction Channel depth
+
+blocks
+(    // hex (       Vertices indices to create a block       ) (  slicing the block  ) simpleGrading ( expansiton Ratio factor )
+    // Block Down
+        hex ( /* Z=0.0: */  0  1  2 Vi /* Z=0.5: */ Vi Vi Vi Vi ) (   1   1   1   ) simpleGrading ( 1 1 1 ) // block id: 0 - Reservoir Mid
+        hex ( /* Z=0.0: */  4  5 Vi Vi /* Z=0.5: */ Vi Vi Vi Vi ) (   1   1   1   ) simpleGrading ( 1 1 1 ) // block id: 1 - Reservoir Low
+        hex ( /* Z=0.0: */  3  2 Vi Vi /* Z=0.5: */ Vi Vi Vi Vi ) (   1   1   1   ) simpleGrading ( 1 1 1 ) // block id: 2 - Reservoir Top
+        hex ( /* Z=0.0: */  8  0 Vi Vi /* Z=0.5: */ Vi Vi Vi Vi ) (   1   1   1   ) simpleGrading ( 1 1 1 ) // block id: 3 - inflow channel
+        hex ( /* Z=0.0: */  1 10 Vi Vi /* Z=0.5: */ Vi Vi Vi Vi ) (   1   1   1   ) simpleGrading ( 1 1 1 ) // block id: 4 - outflow channel
+
+    // // Block Up
+
+
+
+
+
+);
+
+edges
+(
+
+);
+
+boundary
+(
+    inlet
+    {
+        type patch;
+        faces
+        (
+            ( 9 /*    */)
+        );
+    }
+    outlet
+    {
+        type patch;
+        faces
+        (
+            // Z Down
+            (10 /*    */)
+            // Z Up
+            (22 /*    */)
+        );
+    }
+    atmosphere
+    {
+        type patch;
+        faces
+        (
+            // Z up near inlet
+            (21 /*    */)
+
+            // Front
+                // Reservoir Mid
+                (24 /*    */)
+                // Reservoir Low
+                (28 /*    */)
+                // Reservoir Top
+                (27 /*    */)
+                // Inflow channel 
+                (32 /*    */)
+                // Outflow Channel
+                (25 /*    */)
+        );
+    }
+    walls
+    {
+        type wall;
+        faces
+        (
+            // Back plane wall
+                // Reservoir Mid
+                ( 0 /*    */) 
+                // Reservoir Low
+                ( 4 /*    */)
+                // Reservoir Top
+                ( 3 /*    */)
+                // Inlet Channel
+                ( 8 /*    */)
+                // Outlet Channel
+                ( 1 /*    */)
+
+            // Region: Reservoir Low
+                // Backward-Facing Step at Inflow channel 
+                ( 0 /*    */) // Z Down
+                (12 /*    */) // Z Up
+                // Parallel Facing Reservoir Low Wall Face
+                ( 4 /*    */) // Z Down
+                (16 /*    */) // Z Up
+                // Forward-Facing Step at Outflow Channel
+                ( 5 /*    */) // Z Down
+                (17 /*    */) // Z Up
+
+            // Region: Reservoir Top
+                // Backward-Facing Step at Inflow Channel
+                ( 6 /*    */) // Z Down
+                (18 /*    */) // Z Up
+                // Parallel Facing Reservoir Low Wall Face
+                ( 7 /*    */) // Z Down
+                (19 /*    */) // Z Up
+                // Forward-Facing Step at Outflow Channel
+                ( 2 /*    */) // Z Down
+                (14 /*    */) // Z Up
+                
+            // Inflow channel walls
+                // Z Down
+                ( 8  0 12 20) 
+                ( 3  9 21 15)
+                // Z Up
+                (20 12 24 32) 
+                (15 21 33 27)
+
+            // Outflow channel walls
+                // Z Down
+                ( 1 10 22 13)
+                (11  2 14 23)
+                // Z Up
+                (13 22 34 25)
+                (23 14 26 35)
+        );
+    }
+);
+
+mergePatchPairs
+(
+);
+
+// ************************************************************************* //
