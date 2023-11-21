@@ -8,4 +8,8 @@ This course has been developed to the best of the authors abilities, but it is n
 
 Youtube link: <link here>
 
+Presentation:
+  [slides](http://193.136.11.66:8888/index.php/s/3rfdc9bdbFKBMYc)
 
+Tutorials:
+  [files](http://193.136.11.66:8888/index.php/s/7f5HwseLGS3rXSJ)
