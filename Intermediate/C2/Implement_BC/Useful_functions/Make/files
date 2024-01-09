@@ -1,3 +1,0 @@
-Useful_functions/newBoundaryConditionFvPatchScalarField.C
-
-LIB = $(FOAM_USER_LIBBIN)/libnewBoundaryCondition

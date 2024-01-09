@@ -1,3 +1,5 @@
+# Beginner [C1]: Introduction to OpenFOAM
+
 **Course Disclaimer**
 
 This offering is not approved or endorsed by OpenCFD Limited, the producer of the OpenFOAM® software and owner of the OPENFOAM® and OpenCFD® trademarks.
