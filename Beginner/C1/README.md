@@ -8,10 +8,10 @@ This offering is not approved or endorsed by OpenCFD Limited, the producer of th
 This course has been developed to the best of the authors abilities, but it is not guaranteed to be error-free. 
 * If you find any errors or inconsistencies, please report them to *info@crheo.org* so that they can be corrected and the documentation improved.
 
-YouTube link: https://youtu.be/7DEv-fdArpM
+## Presentation:
+  * [slides](http://193.136.11.66:8888/index.php/s/ZyNdR2zWTPqcStg) 
+  * [video](https://youtu.be/7DEv-fdArpMQ)
 
-Slides: http://193.136.11.66:8888/index.php/s/ZyNdR2zWTPqcStg
-
-Files: http://193.136.11.66:8888/index.php/s/EPcdjMNpXL9ym3C
-
+## Tutorials:
+  * [files](http://193.136.11.66:8888/index.php/s/EPcdjMNpXL9ym3C)
 
