@@ -7,11 +7,11 @@ This course has been developed to the best of the authors abilities, but it is n
 * If you find any errors or inconsistencies, please report them to *info@crheo.org* so that they can be corrected and the documentation improved.
 
 ## Presentation:
-  * [Slides](http://193.136.11.66:8888/index.php/s/S2xTeEZ5tAk6EQL) 
+  * [Slides](https://nextcloud.crheo.dep.uminho.pt/index.php/s/S2xTeEZ5tAk6EQL) 
   * [Video](https://youtu.be/2DeqA7-WTTo)
 
 ## Data:
-  * [Files](http://193.136.11.66:8888/index.php/s/JkodKsTd6RiEoHx)
+  * [Files](https://nextcloud.crheo.dep.uminho.pt/index.php/s/JkodKsTd6RiEoHx)
 
 
 

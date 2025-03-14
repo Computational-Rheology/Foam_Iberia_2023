@@ -9,9 +9,9 @@ This course has been developed to the best of the authors abilities, but it is n
 * If you find any errors or inconsistencies, please report them to *info@crheo.org* so that they can be corrected and the documentation improved.
 
 ## Presentation:
-  * [Slides](http://193.136.11.66:8888/index.php/s/T2FzZt9yPGWf3Mm) 
+  * [Slides](https://nextcloud.crheo.dep.uminho.pt/index.php/s/T2FzZt9yPGWf3Mm) 
   * [Video](https://youtu.be/IuHW8cwZUU0)
 
 ## Data:
-  * [Files](http://193.136.11.66:8888/index.php/s/89A5doM8fbEJ4fz)
+  * [Files](https://nextcloud.crheo.dep.uminho.pt/index.php/s/89A5doM8fbEJ4fz)
 
