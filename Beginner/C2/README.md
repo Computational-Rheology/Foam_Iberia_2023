@@ -12,9 +12,9 @@ This course has been developed to the best of the authors abilities, but it is n
   * [Slides](https://nextcloud.crheo.dep.uminho.pt/index.php/s/dpfpyAxkd9PNYjd) 
   * [Video](https://youtu.be/mu-3-4Ii-FY)
 
-**Note**: if you get and error while running the script convertPointsToCSV.sh, do the following
+**Note**: if you get and error while running the script convertPointsToCSV.sh, do the following:
 * make it executable: >> chmod +x convertPointsToCSV.sh
-* conver the ascii to univx characters: >> dos2unix ./convertPointsToCSV.sh
+* convert the ascii to univx characters: >> dos2unix ./convertPointsToCSV.sh
 
 ## Data:
   * [Files](https://nextcloud.crheo.dep.uminho.pt/index.php/s/rJrTcS9aRGPzkpM)
